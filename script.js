@@ -31,6 +31,8 @@ function reset() {
         walls: [true, true, true, true],
         visited: false,
         searched: false,
+        parent: null,
+        isPath: false,
       });
     }
   }
@@ -51,9 +53,10 @@ function draw(current = null) {
       py = cell.y * CONFIG.size;
 
     if (cell.visited) ctx.fillStyle = "#51807dff";
+    if (cell.searched) ctx.fillStyle = "#924f92";
     if (cell === current) ctx.fillStyle = "#ebebebff";
 
-    if (cell.visited || cell === current)
+    if (cell.visited || cell.searched || cell === current)
       ctx.fillRect(px, py, CONFIG.size, CONFIG.size);
 
     ctx.strokeStyle = "#4d4d4dff";
@@ -75,7 +78,6 @@ async function genMaze() {
   if (isRunning) return;
   isRunning = true;
   reset();
-
   let stack = [],
     current = grid[0];
   current.visited = true;
@@ -103,8 +105,48 @@ async function genMaze() {
   isRunning = false;
 }
 
-window.app = {
-  genMaze,
-  mazeRunner: () => alert(),
-};
+async function mazeRunner() {
+  if (isRunning) return;
+  if (!grid[0].visited) await genMaze();
+
+  grid.forEach((c) => {
+    c.searched = false;
+    c.parent = null;
+    c.isPath = false;
+  });
+  isRunning = true;
+
+  let queue = [grid[0]],
+    end = grid[grid.length - 1],
+    found = false;
+  grid[0].searched = true;
+
+  while (queue.length > 0) {
+    let current = queue.shift();
+    if (current === end) {
+      found = true;
+      break;
+    }
+
+    DIR.forEach((d) => {
+      let neighbor = grid[index(current.x + d.x, current.y + d.y)];
+      if (neighbor && !current.walls[d.w] && !neighbor.searched) {
+        neighbor.searched = true;
+        neighbor.parent = current;
+        queue.push(neighbor);
+      }
+    });
+    draw(current);
+    await sleep(5);
+  }
+
+  if (found) {
+    console.log("encontrado!");
+  }
+
+  draw();
+  isRunning = false;
+}
+
+window.app = { genMaze, mazeRunner };
 setup();
