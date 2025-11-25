@@ -49,13 +49,13 @@ Abaixo estão demonstrados os estágios de funcionamento da aplicação.
 
 ### 1. Geração via DFS (Backtracking)
 
-![Geração do Labirinto](assets/Mazefy.png)
-![Geração do Labirinto](assets/Mazefy2.png)
+![Geração do Labirinto](assets/Mazefy-gen2.png)
+![Geração do Labirinto](assets/Mazefy-gen.png)
 
 ### 2. Solução via BFS (Busca em Largura)
 
 ![Busca em Largura](assets/Mazefy3.png)
-![Busca em Largura](assets/Mazefy4.png)
+![Busca em Largura](assets/Mazefy-sol.png)
 
 ### 3. Caminho Encontrado
 
