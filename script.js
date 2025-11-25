@@ -54,6 +54,7 @@ function draw(current = null) {
 
     if (cell.visited) ctx.fillStyle = "#51807dff";
     if (cell.searched) ctx.fillStyle = "#924f92";
+    if (cell.isPath) ctx.fillStyle = "#a1a1a1ff";
     if (cell === current) ctx.fillStyle = "#ebebebff";
 
     if (cell.visited || cell.searched || cell === current)
@@ -78,6 +79,7 @@ async function genMaze() {
   if (isRunning) return;
   isRunning = true;
   reset();
+
   let stack = [],
     current = grid[0];
   current.visited = true;
@@ -85,6 +87,7 @@ async function genMaze() {
 
   while (stack.length > 0) {
     current = stack.pop();
+
     let neighbors = DIR.map((d) => ({
       cell: grid[index(current.x + d.x, current.y + d.y)],
       dir: d,
@@ -93,6 +96,7 @@ async function genMaze() {
     if (neighbors.length > 0) {
       stack.push(current);
       let chosen = neighbors[Math.floor(Math.random() * neighbors.length)];
+
       current.walls[chosen.dir.w] = false;
       chosen.cell.walls[chosen.dir.opp] = false;
       chosen.cell.visited = true;
@@ -141,9 +145,24 @@ async function mazeRunner() {
   }
 
   if (found) {
-    console.log("encontrado!");
-  }
+    let curr = end;
+    while (curr) {
+      curr.isPath = true;
+      curr = curr.parent;
+    }
+    let pathList = grid.filter((c) => c.isPath);
+    let pathStack = [];
+    curr = end;
+    while (curr) {
+      pathStack.push(curr);
+      curr = curr.parent;
+    }
 
+    for (let i = pathStack.length - 1; i >= 0; i--) {
+      draw();
+      await sleep(20);
+    }
+  }
   draw();
   isRunning = false;
 }
